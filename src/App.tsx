@@ -10,14 +10,7 @@ const App = () => {
 
   const [numNodes, setNumNodes] = useState(0);
   const [nodeNames, setNodeNames] = useState<NodeName>({});
-
-  const adjacencyMatrix = [
-    [0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-  ];
+  const [isShowForm, setisShowForm] = useState(true)
 
   const handleNumNodes = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumNodes(e.target.valueAsNumber);
@@ -28,6 +21,10 @@ const App = () => {
       ...nodeNames,
       [nodeIndex]: e.target.value
     });
+  }
+
+  const handleShowForm = () => {
+    setisShowForm(!isShowForm);
   }
 
   const mapNodesForm = () => {
@@ -48,30 +45,27 @@ const App = () => {
 
   // Construir la cadena DOT a partir de la matriz de adyacencia
   let dotString = 'digraph {';
-  for (let i = 0; i < adjacencyMatrix.length; i++) {
-    for (let j = 0; j < adjacencyMatrix[i].length; j++) {
-      if (adjacencyMatrix[i][j] === 1) {
-        const sourceNodeName = nodeNames[i] || String.fromCharCode(97 + i);
-        const targetNodeName = nodeNames[j] || String.fromCharCode(97 + j);
-        dotString += ` ${sourceNodeName} -> ${targetNodeName};`;
-      }
-    }
+  for (let i = 0; i < numNodes; i++) {
+    dotString += `${nodeNames[i]} [label="${nodeNames[i]}"];`;
   }
   dotString += '}';
 
   return (
-    <div className='flex'>
-      <div className='w-[50%]'>
-        <form className='flex flex-col gap-5'>
-          <div className='flex flex-col gap-2'>
-            <label htmlFor="numNodes">Número de nodos</label>
-            <input onChange={handleNumNodes} className='text-black' type="number" name="numNodes" id="numNodes" />
-          </div>
-          {mapNodesForm()}
-          <button className='bg-red-400 px-4 py-2 rounded-md'>Dibujar</button>
-        </form>
+    <div className='flex justify-between'>
+      <div className='w-[20%]'>
+        <button onClick={handleShowForm} className='bg-green-400 px-4 py-2 rounded-md'>Form</button>
+        {isShowForm && (
+          <form className='flex flex-col gap-5'>
+            <div className='flex flex-col gap-2'>
+              <label htmlFor="numNodes">Número de nodos</label>
+              <input onChange={handleNumNodes} className='text-black' type="number" name="numNodes" id="numNodes" />
+            </div>
+            {mapNodesForm()}
+            <button className='bg-red-400 px-4 py-2 rounded-md'>Dibujar</button>
+          </form>
+        )}
       </div>
-      <div className='w-[50%]'>
+      <div className='w-[80%]'>
         <Graphviz dot={dotString} />
       </div>
     </div>
