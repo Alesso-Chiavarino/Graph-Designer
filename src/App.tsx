@@ -64,7 +64,7 @@ const App = () => {
       <div className='w-[50%]'>
         <form className='flex flex-col gap-5'>
           <div className='flex flex-col gap-2'>
-            <label htmlFor="numNodes">Número de nodos</label>
+            <label htmlFor="numNodes">Número de NODOS</label>
             <input onChange={handleNumNodes} className='text-black' type="number" name="numNodes" id="numNodes" />
           </div>
           {mapNodesForm()}
