@@ -4,49 +4,33 @@ import React, { useState } from 'react';
 
 const App = () => {
 
-  type NodeName = {
-    [index: number]: string
-  }
+  // type NodeName = {
+  //   [index: number]: string
+  // }
 
-  const [numNodes, setNumNodes] = useState(0);
-  const [nodeNames, setNodeNames] = useState<NodeName>({});
+  const [nodes, setNodes] = useState([]);
+  const [nodeName, setNodeName] = useState('')
+  // const [nodeNames, setNodeNames] = useState<NodeName>({});
   const [isShowForm, setisShowForm] = useState(true)
 
-  const handleNumNodes = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNumNodes(e.target.valueAsNumber);
-  }
-
-  const handleNodes = (e: React.ChangeEvent<HTMLInputElement>, nodeIndex: number) => {
-    setNodeNames({
-      ...nodeNames,
-      [nodeIndex]: e.target.value
-    });
+  const handleNodes = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNodeName(e.target.value);
   }
 
   const handleShowForm = () => {
     setisShowForm(!isShowForm);
   }
 
-  const mapNodesForm = () => {
-    const nodesForm = [];
-    for (let i = 0; i < numNodes; i++) {
-      nodesForm.push(
-        <div key={i}>
-          <hr />
-          <div className='flex flex-col gap-2'>
-            <label htmlFor={`node${i}`}>Nombre del nodo {i + 1}</label>
-            <input onChange={(e) => handleNodes(e, i)} className='text-black' type="text" name={`node${i}`} id={`node${i}`} />
-          </div>
-        </div>
-      );
-    }
-    return nodesForm;
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setNodes([...nodes, { name: nodeName }]);
+    setNodeName('');
   }
 
   // Construir la cadena DOT a partir de la matriz de adyacencia
   let dotString = 'digraph {';
-  for (let i = 0; i < numNodes; i++) {
-    dotString += `${nodeNames[i]} [label="${nodeNames[i]}"];`;
+  for (let i = 0; i < nodes.length; i++) {
+    dotString += `${nodes[i].name};`;
   }
   dotString += '}';
 
@@ -55,18 +39,27 @@ const App = () => {
       <div className='w-[20%]'>
         <button onClick={handleShowForm} className='bg-green-400 px-4 py-2 rounded-md'>Form</button>
         {isShowForm && (
-          <form className='flex flex-col gap-5'>
+          <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
             <div className='flex flex-col gap-2'>
-              <label htmlFor="numNodes">Número de nodos</label>
-              <input onChange={handleNumNodes} className='text-black' type="number" name="numNodes" id="numNodes" />
+              <label htmlFor="numNodes">Nombre del nodo</label>
+              <input onChange={handleNodes} value={nodeName} className='text-black' name="numNodes" id="numNodes" />
             </div>
-            {mapNodesForm()}
-            <button className='bg-red-400 px-4 py-2 rounded-md'>Dibujar</button>
+            <button className='bg-red-400 px-4 py-2 rounded-md'>Añadir</button>
           </form>
         )}
+        <div>
+          <h5>Nodos</h5>
+          <div>
+            {nodes.length > 0 && nodes.map((node, index) => (
+              <div key={index} className='border-2 rounded-md border-red-400 w-fit'>
+                <span>{node.name}</span>
+              </div>
+            ))} 
+          </div>
+        </div>
       </div>
       <div className='w-[80%]'>
-        <Graphviz dot={dotString} />
+        {/* <Graphviz dot={dotString} /> */}
       </div>
     </div>
   );
